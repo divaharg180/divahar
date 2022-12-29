@@ -87,7 +87,7 @@ p span{
                     <div class="center">
                         <img src ="images/avatar.jpg">
                           <div  value="100" class="name"><p>AVATAR 2</p></div>
-                    <button>Book</button></div>
+                    <button onclick="onClickEvent()">Book</button></div>
                     </div>
         </div> 
         <div class="showcase">
@@ -109,8 +109,8 @@ p span{
                     <div class="seat"></div>
                     <div class="seat"></div>
                     <div class="seat"></div>
-                    <div class="seat sold"></div>
-                    <div class="seat sold"></div>
+                    <div class="seat "></div>
+                    <div class="seat "></div>
                     <div class="seat"></div>
       
       
@@ -141,21 +141,21 @@ p span{
          
              <div class="row">
               <div class="seat"></div>
-              <div class="seat sold"></div>
-              <div class="seat sold"></div>
               <div class="seat"></div>
               <div class="seat"></div>
-              <div class="seat"></div>          
               <div class="seat"></div>
               <div class="seat sold"></div>
+              <div class="seat sold"></div>          
+              <div class="seat"></div>
+              <div class="seat"></div>
          </div>
          <div class="row">
           <div class="seat"></div>
           <div class="seat"></div>
           <div class="seat"></div>
+          <div class="seat sold"></div>
           <div class="seat"></div>
-          <div class="seat"></div>
-          <div class="seat"></div>
+          <div class="seat sold"></div>
           <div class="seat"></div>
           <div class="seat"></div>     
       </div><div class="row">
@@ -211,8 +211,8 @@ p span{
       </div><div class="row">
           <div class="seat"></div>
           <div class="seat"></div>
-          <div class="seat"></div>
-          <div class="seat"></div>
+          <div class="seat sold"></div>
+          <div class="seat sold"></div>
           <div class="seat"></div>
           <div class="seat"></div>
           <div class="seat"></div>
@@ -235,21 +235,18 @@ const container = document.querySelector('.container')
 const seats = document.querySelectorAll('.row .seat:not(.sold)');
 const count = document.getElementById("count");
 const total = document.getElementById("total");
-// console.log(count);
-// console.log(seats);
-// console.log(total);
-// console.log(container);
-// console.log(window);
-populateUI()
+const ticketPrice = 100;
 
-let ticketPrice = 100;
+populateUI();
 
 function updateSelectedCount() {
+
 const selectedSeats = document.querySelectorAll('.row .seat.selected');
 const seatIndex = [...selectedSeats].map((seat) => [...seats].indexOf(seat));
 
+console.log(JSON.stringify(seatIndex));
+
 localStorage.setItem('selectedSeats', JSON.stringify(seatIndex));
-localStorage.setItem('A ',JSON.stringify(1));
 
 const selectedSeatsCount = selectedSeats.length;
 
@@ -257,26 +254,56 @@ const selectedSeatsCount = selectedSeats.length;
      total.innerText = selectedSeatsCount * ticketPrice;
 }
 function populateUI(){
-    const selectedSeats = JSON.parse(localStorage.getItem('selectedSeats'));
-    if(selectedSeats !== null && selectedSeats.length > 0){
+    
+    let  soldSeats = JSON.parse(localStorage.getItem('soldSeats'));
+
+    if(soldSeats !== null && soldSeats.length > 0){
         seats.forEach((seat,index) => {
-            if(selectedSeats.indexOf(index) > -1){
-            seat.classList.add('selected');
+            if(soldSeats.indexOf(index) > -1){
+            seat.classList.add('sold');
         }  
         
     });
 }
+}
 
-}updateSelectedCount();
 
 container.addEventListener('click', (e) => {
     if (e.target.classList.contains('seat') && !e.target.classList.contains('sold')) {
       e.target.classList.toggle('selected');
-
-  
       updateSelectedCount();
     }
   });
+
+  function onClickEvent(){
+
+    const selectedSeats = document.querySelectorAll('.row .seat.selected');
+    const soldSeats = document.querySelectorAll('.row .seat.sold');
+    
+
+    if(selectedSeats.length == 0){  
+        alert("Please select atleast one seat to book");
+    }
+    else{  
+        var newLine = "\n";
+        var message = " Tickets Booked Successfully ";
+        message = message + newLine;
+        message = message + "Seat Selected : "+ selectedSeats.length;
+        message = message + newLine;
+        message = message + "Total Price : " + selectedSeats.length * ticketPrice; 
+        alert(message);
+
+        let  selectedSeatsIndex = [...selectedSeats].map((seat) => [...seats].indexOf(seat));
+        let  soldSeatsIndex = [...soldSeats].map((seat) => [...seats].indexOf(seat));
+
+        let takenSeats = selectedSeatsIndex.concat(soldSeatsIndex); 
+
+        localStorage.setItem('soldSeats', JSON.stringify(takenSeats));
+        location.reload(); 
+    }
+
+
+  }
   
 
 
